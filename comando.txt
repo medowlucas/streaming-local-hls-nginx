@@ -1,0 +1,1 @@
+docker exec -it ffmpeg_converter sh -c "cd /usr/local/bin && ./convert.sh"

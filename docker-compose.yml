@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  nginx:
+    build: .
+    container_name: nginx_server
+    ports:
+      - "8080:80"       # Porta HTTP
+      - "1935:1935"     # Porta RTMP
+    volumes:
+      - ./videos:/usr/share/nginx/html/videos
+      - ./stream:/usr/share/nginx/html/stream
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Copia seu arquivo de configuração customizado
+    networks:
+      - app-network
+
+  ffmpeg:
+    image: jrottenberg/ffmpeg
+    container_name: ffmpeg_converter
+    volumes:
+      - ./videos:/videos  # Compartilha a pasta de vídeos
+      - ./stream:/stream  # Compartilha a pasta de stream
+      - ./convert.sh:/usr/local/bin/convert.sh  # Copia o script de conversão para o FFmpeg
+    entrypoint: /bin/bash -c "while true; do sleep 1000; done"  # Mantém o contêiner em execução
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
